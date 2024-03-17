@@ -145,25 +145,24 @@ int main(int argc, char* argv[]) {
             printf("pcap_next_ex return %d(%s)\n", res, pcap_geterr(pcap));
             break;
         }
-        printf("\n%u bytes captured\n", header->caplen);
 
         /* Ethernet Header */
         struct libnet_ethernet_hdr *eth_hdr = (struct libnet_ethernet_hdr*)packet;
         if(ntohs(eth_hdr->ether_type) != ETHERTYPE_IP) continue;
-        printf("type = %04x \n",ntohs(eth_hdr->ether_type));
-        printf("Source MAC: %s\n" , ether_ntoa((struct ether_addr*)eth_hdr->ether_shost));
-        printf("Destination MAC: %s\n" , ether_ntoa((struct ether_addr*)eth_hdr->ether_dhost));
-
 
         /* IPv4 Header */
         struct libnet_ipv4_hdr *ip_hdr = (struct libnet_ipv4_hdr*)(packet + sizeof(struct libnet_ethernet_hdr));
         if(ip_hdr->ip_p != IPPROTO_TCP) continue;
-        printf("proto = %d \n", ip_hdr->ip_p);
-        printf("Source IP: %s\n", inet_ntoa(ip_hdr->ip_src));
-        printf("Destination IP: %s\n", inet_ntoa(ip_hdr->ip_dst));
 
         /* TCP Header */
         struct libnet_tcp_hdr *tcp_hdr = (struct libnet_tcp_hdr*)(packet + sizeof(struct libnet_ethernet_hdr) + sizeof(struct libnet_ipv4_hdr));
+
+        printf("Source MAC: %s\n" , ether_ntoa((struct ether_addr*)eth_hdr->ether_shost));
+        printf("Destination MAC: %s\n" , ether_ntoa((struct ether_addr*)eth_hdr->ether_dhost));
+
+        printf("Source IP: %s\n", inet_ntoa(ip_hdr->ip_src));
+        printf("Destination IP: %s\n", inet_ntoa(ip_hdr->ip_dst));
+
         printf("Source Port: %d\n",ntohs(tcp_hdr->th_sport));
         printf("Destination Port: %d\n",ntohs(tcp_hdr->th_dport));
 
@@ -176,7 +175,7 @@ int main(int argc, char* argv[]) {
                 printf("0x%02X ", data[j]);
             }
             printf("\n");
-            printf("Data 0 byte.\n");
+            printf("Data does not exist.\n");
         }else{                              /* Print Data */
             printf("Data(10bytes): ");
             for(size_t j=0;j<10;j++){
@@ -184,6 +183,8 @@ int main(int argc, char* argv[]) {
             }
             printf("\n");
         }
+
+        printf("===============================\n");
     }
 
     pcap_close(pcap);
