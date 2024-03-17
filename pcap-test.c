@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
         printf("\n%u bytes captured\n", header->caplen);
 
         /* Ethernet Header */
-        struct libnet_ethernet_hdr *eth_hdr = packet;
+        struct libnet_ethernet_hdr *eth_hdr = (struct libnet_ethernet_hdr*)packet;
         if(ntohs(eth_hdr->ether_type) != ETHERTYPE_IP) continue;
         printf("type = %04x \n",ntohs(eth_hdr->ether_type));
         printf("Source MAC: %s\n" , ether_ntoa((struct ether_addr*)eth_hdr->ether_shost));
@@ -156,19 +156,19 @@ int main(int argc, char* argv[]) {
 
 
         /* IPv4 Header */
-        struct libnet_ipv4_hdr *ip_hdr = packet + sizeof(struct libnet_ethernet_hdr);
+        struct libnet_ipv4_hdr *ip_hdr = (struct libnet_ipv4_hdr*)(packet + sizeof(struct libnet_ethernet_hdr));
         if(ip_hdr->ip_p != IPPROTO_TCP) continue;
         printf("proto = %d \n", ip_hdr->ip_p);
         printf("Source IP: %s\n", inet_ntoa(ip_hdr->ip_src));
         printf("Destination IP: %s\n", inet_ntoa(ip_hdr->ip_dst));
 
         /* TCP Header */
-        struct libnet_tcp_hdr *tcp_hdr = packet + sizeof(struct libnet_ethernet_hdr) + sizeof(struct libnet_ipv4_hdr);
+        struct libnet_tcp_hdr *tcp_hdr = (struct libnet_tcp_hdr*)(packet + sizeof(struct libnet_ethernet_hdr) + sizeof(struct libnet_ipv4_hdr));
         printf("Source Port: %d\n",ntohs(tcp_hdr->th_sport));
         printf("Destination Port: %d\n",ntohs(tcp_hdr->th_dport));
 
         /* Data After TCP Header */
-        u_int8_t *data = packet + sizeof(struct libnet_ethernet_hdr) + sizeof(struct libnet_ipv4_hdr) + (tcp_hdr->th_off)*4;
+        u_int8_t *data = (u_int8_t *)(packet + sizeof(struct libnet_ethernet_hdr) + sizeof(struct libnet_ipv4_hdr) + (tcp_hdr->th_off)*4);
         size_t hdr_size = sizeof(struct libnet_ethernet_hdr) + sizeof(struct libnet_ipv4_hdr) + (tcp_hdr->th_off)*4;
         if(header->caplen > hdr_size){
             if(header->caplen - hdr_size < 10){ /* Ehternet Padding */
