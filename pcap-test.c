@@ -170,23 +170,19 @@ int main(int argc, char* argv[]) {
         /* Data After TCP Header */
         u_int8_t *data = (u_int8_t *)(packet + sizeof(struct libnet_ethernet_hdr) + sizeof(struct libnet_ipv4_hdr) + (tcp_hdr->th_off)*4);
         size_t hdr_size = sizeof(struct libnet_ethernet_hdr) + sizeof(struct libnet_ipv4_hdr) + (tcp_hdr->th_off)*4;
-        if(header->caplen > hdr_size){
-            if(header->caplen - hdr_size < 10){ /* Ehternet Padding */
-                printf("Ethernet Padding: ");
-                for(size_t j=0;j<header->caplen - hdr_size;j++){
-                    printf("0x%02X ", data[j]);
-                }
-                printf("\n");
-                printf("Data 0 byte.\n");
-            }else{ /* Print Data */
-                printf("Data(10bytes): ");
-                for(size_t j=0;j<10;j++){
-                    printf("0x%02X ", data[j]);
-                }
-                printf("\n");
+        if(header->caplen - hdr_size < 10){ /* Ehternet Padding */
+            printf("Ethernet Padding: ");
+            for(size_t j=0;j<header->caplen - hdr_size;j++){
+                printf("0x%02X ", data[j]);
             }
-        }else{ /* header->caplen == hdr_size */
+            printf("\n");
             printf("Data 0 byte.\n");
+        }else{                              /* Print Data */
+            printf("Data(10bytes): ");
+            for(size_t j=0;j<10;j++){
+                printf("0x%02X ", data[j]);
+            }
+            printf("\n");
         }
     }
 
