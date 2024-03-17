@@ -175,9 +175,9 @@ int main(int argc, char* argv[]) {
                 printf("0x%02X ", data[j]);
             }
             printf("\n");
-            printf("Data does not exist.\n");
+            printf("Payload(Data) does not exist.\n");
         }else{                              /* Print Data */
-            printf("Data(10bytes): ");
+            printf("Payload/Data(10bytes): ");
             for(size_t j=0;j<10;j++){
                 printf("0x%02X ", data[j]);
             }
